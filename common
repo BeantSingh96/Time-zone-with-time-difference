@@ -1,0 +1,57 @@
+
+fun convertTimeZone(serverDate: String): String {
+    var ourdate: String
+    val serverDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+    try {
+        val formatter = SimpleDateFormat(serverDateFormat, Locale.ENGLISH)
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        val value = formatter.parse(serverDate)
+
+        val dateCurrent = Calendar.getInstance().time
+        ourdate = dateDifference(value!!, dateCurrent)
+    } catch (e: Exception) {
+        ourdate = "0000-00-00 00:00:00"
+    }
+    return ourdate
+}
+
+fun dateDifference(startDate: Date, endDate: Date): String {
+
+    //milliseconds
+    var different = endDate.time - startDate.time
+
+    printLogs("startDate : $startDate")
+    printLogs("endDate : $endDate")
+    printLogs("different : $different")
+
+    val secondsInMilli: Long = 1000
+    val minutesInMilli = secondsInMilli * 60
+    val hoursInMilli = minutesInMilli * 60
+    val daysInMilli = hoursInMilli * 24
+
+    val elapsedDays = different / daysInMilli
+    different %= daysInMilli
+
+    val elapsedHours = different / hoursInMilli
+    different %= hoursInMilli
+
+    val elapsedMinutes = different / minutesInMilli
+    different %= minutesInMilli
+
+    val elapsedSeconds = different / secondsInMilli
+
+    System.out.printf(
+        "%d days, %d hours, %d minutes, %d seconds%n",
+        elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds
+    )
+
+    var str = ""
+
+    when {
+        elapsedMinutes == 0L -> str = "$elapsedSeconds seconds ago"
+        elapsedHours == 0L -> str = "$elapsedMinutes minutes ago"
+        elapsedDays == 0L -> str = "$elapsedHours hours ago"
+        else -> str = "$elapsedDays days ago"
+    }
+    return str
+}
